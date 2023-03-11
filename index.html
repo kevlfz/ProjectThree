@@ -3,8 +3,8 @@
     background-color: #6caf53;
     position: absolute;
 		transform: translate(-50%, -50%);
-    top: 90%;
-    left: 15%;
+    top: 85%;
+    left: 20%;
     padding: 10px 10px;
     border-radius: 15px;
     display: grid;
@@ -46,8 +46,10 @@
       oninput="colors()">
     </div>
 	
-  <span id="output">hsl(0,0,0)</span>
-    
+ 		<span id="output">hsl(0,0,0)</span>
+    <button style="margin:10px;" id="btn">Erase</button>
+    <input type="button" value="Flower On" id="onoff" onclick="onoff();">
+
   </div>
   <script src="https://cdn.jsdelivr.net/npm/p5@1.4.1/lib/p5.js"></script>
   <script>
@@ -61,6 +63,50 @@
       saturation = document.getElementById("saturation").value;
       lightness = document.getElementById("lightness").value;
       document.getElementById("output").innerHTML = 'hsl('+hue+','+saturation+','+lightness+')';
+    }
+    
+    let flowerBTN = "Flower Off";
+    
+		function onoff(){
+ 			let currentvalue = document.getElementById('onoff').value;
+  		if(currentvalue === "Flower Off"){
+   			document.getElementById("onoff").value="Flower On";
+        flowerBTN = "Flower Off";
+ 		 	}
+      else{
+    		document.getElementById("onoff").value="Flower Off";
+        flowerBTN = "Flower On";
+ 			}
+		}
+    
+    class Flowers{
+      constructor(x,y,size){
+        this.x = x;
+        this.y = y;
+        this.vs = Math.random() * 0.3;
+        this.size = size;
+        this.maxFlowerSize = this.size + Math.random() * 55;
+        this.image = new Image();
+        this.image.src = 'RetroFlowers.jpg';
+        this.frameSize = 690;
+        this.fX = Math.floor(Math.random() * 3);
+        this.fY = Math.floor(Math.random() * 3);
+        
+        if (this.size > 5){
+          this.willFlower = true;
+        }
+        else{
+          this.willFlower = false;
+        }
+      }
+      
+      grow(){
+        if (this.willFlower && (this.size < this.maxFlowerSize)){
+          this.size += this.vs;
+          ctx.drawImage(this.image, this.frameSize * this.fX, this.frameSize * this.fY, this.frameSize, this.frameSize, this.x - this.size / 2, this.y - this.size / 2, this.size, this.size);
+        	requestAnimationFrame(this.grow.bind(this));
+        }
+      }
     }
 
     class Stem {
@@ -127,14 +173,6 @@
       // ctx.canvas.height = 457;
       //let points = [];
 
-      const imgLinks = [
-         "url('https://cdn.shopify.com/s/files/1/1394/8105/files/sentinels_detail_600x600.jpg?v=1609965908.jpg?w=1380&t=st=1676307169~exp=1676307769~hmac=ec4286b43bc937d24e5bc8049ec0e6c1bd14edf20dcb3d14a3356bca07a7ece1')",
-         "url('https://www.wallmur.com/media/catalog/pdata/cache/1/crop_image/1100x/040ec0/c/_/black-and-white-forest-wallpaper-mural-wm-21343751oo-41481680.jpg')",
-         "url('https://images.custommade.com/NyCZz9O3clVzLWZGFsD5mbsW8TA=/custommade-photosets/125891/125891.423300.jpg')",
-         "url('https://img.rawpixel.com/s3fs-private/rawpixel_images/website_content/fl22107211073-image-kufaqx2q.jpg?w=800&dpr=1&fit=default&crop=default&q=65&vib=3&con=3&usm=15&bg=F4F4F3&ixlib=js-2.2.1&s=aec133d36ca4f1a93a5668ca8eb6cccb')",
-         "url('https://media.istockphoto.com/id/907831032/photo/sun-bursts-in-the-rain-forest-vancouver-canada-in-black-and-white.jpg?b=1&s=170667a&w=0&k=20&c=TMXTY6Q6uCEMzqPIljwUFkpQrea5J826X7E2evXiG7g=')"
-       ];
-
       let drawing = false;
 
       let density = 20
@@ -167,7 +205,9 @@
         ellipse(points[i].x, points[i].y, 1)
       }
     }
-
+    
+    btn.addEventListener('click', setup)
+    
     window.addEventListener('mousemove', function(e){  
         if(drawing){
           for (let i = 0; i < 3; i++){
