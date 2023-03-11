@@ -45,6 +45,11 @@
       max="100" value="0" id="lightness"
       oninput="colors()">
     </div>
+    <div class="wrapper">
+      Thickness<input type="range" min="0"
+      max="100" value="50" id="thickness"
+      oninput="colors()">
+    </div>
 	
  		<span id="output">hsl(0,0,0)</span>
     <button style="margin:10px;" id="btn">Reset</button>
@@ -57,11 +62,13 @@
     let hue;
     let saturation;
     let lightness;
+    let thickness;
     
-    function colorSelect(){
+    function brushSelect(){
       hue = document.getElementById("hue").value;
       saturation = document.getElementById("saturation").value;
       lightness = document.getElementById("lightness").value;
+      thickness = document.getElementById("thickness").value;
       document.getElementById("output").innerHTML = 'hsl('+hue+','+saturation+','+lightness+')';
     }
     
@@ -139,7 +146,7 @@
 
           if (this.size < this.maxSize){
             ctx.beginPath();
-            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.arc(this.x, this.y, thickness*0.1, 0, Math.PI * 2);
 
             // let hue = 129;
             // let saturation = Math.floor(Math.random() * 50);
@@ -213,7 +220,7 @@
           for (let i = 0; i < 3; i++){
             const root = new Stem(e.x, e.y);
             root.update();
-            colorSelect();
+            brushSelect();
           }
         }
       });
