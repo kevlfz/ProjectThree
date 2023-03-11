@@ -1,136 +1,195 @@
-<script src="https://cdn.jsdelivr.net/npm/p5@1.4.1/lib/p5.js"></script>
+<style>
+  .container{
+    background-color: #6caf53;
+    position: absolute;
+		transform: translate(-50%, -50%);
+    top: 90%;
+    left: 15%;
+    padding: 10px 10px;
+    border-radius: 15px;
+    display: grid;
+    justify-items: center;
+  }
+  .wrapper{
+    width: 100%;
+    text-align: center;
+  }
+  .input[type="range"]{
+    display: incline-block;
+    width: 80%;
+    margin-left: 10px;
+    margin-top: 25px;
+  }
+  span{
+    display: incline-block;
+    text-align: center;
+    color: #ffffff;
+  }
+</style>
 
-<script>
+
+<body>
+  <div class="container">
+    <div class="wrapper">
+      Hue<input type="range" min="0"
+      max="360" value="0" id="hue"
+      oninput="colors()">
   
-  let ctx; 
-  
-  class Stem {
-      constructor(x,y){
-        this.x = x
-        this.y = y
-        this.speedX = Math.random()* 4 - 2;
-        this.speedY = Math.random() * 4 - 2;
-        this.maxSize = Math.random() * 8;
-        this.size = Math.random() + 1.5 ;
-        this.variedsize = Math.random() * 0.2 + 0.05;
-        this.angleX = Math.random() * 6;
-      	this.varX = Math.random() * 0.6 - 0.3;
-        this.angleY = Math.random() * 6;
-        this.varY = Math.random() * 0.6 - 0.3;
-        this.lightness = 10;
+  	<div class="wrapper">
+      Saturation<input type="range" min="0"
+      max="100" value="0" id="saturation"
+      oninput="colors()">
+    </div>
+    <div class="wrapper">
+      Lightness<input type="range" min="0"
+      max="100" value="0" id="lightness"
+      oninput="colors()">
+    </div>
+	
+  <span id="output">hsl(0,0,0)</span>
+    
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.4.1/lib/p5.js"></script>
+  <script>
+    let ctx;
+    let hue;
+    let saturation;
+    let lightness;
+    
+    function colorSelect(){
+      hue = document.getElementById("hue").value;
+      saturation = document.getElementById("saturation").value;
+      lightness = document.getElementById("lightness").value;
+      document.getElementById("output").innerHTML = 'hsl('+hue+','+saturation+','+lightness+')';
+    }
+
+    class Stem {
+        constructor(x,y){
+          this.x = x
+          this.y = y
+          this.speedX = Math.random()* 4 - 2;
+          this.speedY = Math.random() * 4 - 2;
+          this.maxSize = Math.random() * 8;
+          this.size = Math.random() + 1.5 ;
+          this.variedsize = Math.random() * 0.2 + 0.05;
+          this.angleX = Math.random() * 6;
+          this.varX = Math.random() * 0.6 - 0.3;
+          this.angleY = Math.random() * 6;
+          this.varY = Math.random() * 0.6 - 0.3;
+          this.lightness = 10;
+        }
+
+        update(){
+          this.x += this.speedX + Math.sin(this.angleX);
+          this.y += this.speedY + Math.sin(this.angleY);
+          this.size += this.variedsize;
+          this.angleX += this.varX;
+          this.angleY += this.varY;
+
+
+          if (this.lightness < 70){
+            this.lightness += 0.25;
+          }
+
+          if (this.size < this.maxSize){
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+
+            // let hue = 129;
+            // let saturation = Math.floor(Math.random() * 50);
+            // let lightness = 48;
+            ctx.fillStyle = 'hsl(' + hue + ',' + saturation + '%,' + lightness + '%)'
+            ctx.fill();
+            ctx.stroke();
+            requestAnimationFrame(this.update.bind(this));
+          }
+          else{
+            const flowers = new Flowers(this.x, this.y, this.size);
+            if (flowerBTN === "Flower On"){
+              flowers.grow();
+            }
+          }
+         }
       }
-      
-      update(){
-        this.x += this.speedX + Math.sin(this.angleX);
-        this.y += this.speedY + Math.sin(this.angleY);
-        this.size += this.variedsize;
-        this.angleX += this.varX;
-        this.angleY += this.varY;
-        
-        
-        if (this.lightness < 70){
-          this.lightness += 0.25;
+
+
+    let points = [];
+    let mult = 0.005;
+
+    function setup() {
+
+      ctx = createCanvas(windowWidth, windowHeight);
+      background(30);
+      ctx = canvas.getContext('2d');
+
+      // const canvas = document.getElementById("canva");
+      // ctx.canvas.width = 683;
+      // ctx.canvas.height = 457;
+      //let points = [];
+
+      const imgLinks = [
+         "url('https://cdn.shopify.com/s/files/1/1394/8105/files/sentinels_detail_600x600.jpg?v=1609965908.jpg?w=1380&t=st=1676307169~exp=1676307769~hmac=ec4286b43bc937d24e5bc8049ec0e6c1bd14edf20dcb3d14a3356bca07a7ece1')",
+         "url('https://www.wallmur.com/media/catalog/pdata/cache/1/crop_image/1100x/040ec0/c/_/black-and-white-forest-wallpaper-mural-wm-21343751oo-41481680.jpg')",
+         "url('https://images.custommade.com/NyCZz9O3clVzLWZGFsD5mbsW8TA=/custommade-photosets/125891/125891.423300.jpg')",
+         "url('https://img.rawpixel.com/s3fs-private/rawpixel_images/website_content/fl22107211073-image-kufaqx2q.jpg?w=800&dpr=1&fit=default&crop=default&q=65&vib=3&con=3&usm=15&bg=F4F4F3&ixlib=js-2.2.1&s=aec133d36ca4f1a93a5668ca8eb6cccb')",
+         "url('https://media.istockphoto.com/id/907831032/photo/sun-bursts-in-the-rain-forest-vancouver-canada-in-black-and-white.jpg?b=1&s=170667a&w=0&k=20&c=TMXTY6Q6uCEMzqPIljwUFkpQrea5J826X7E2evXiG7g=')"
+       ];
+
+      let drawing = false;
+
+      let density = 20
+      let space = width / density;
+
+      for (let x = 0; x < width; x += space){
+        for (let y = 0; y < height; y+= space){
+          var p = createVector(x,y)
+          points.push(p)
         }
-        
-        if (this.size < this.maxSize){
-          ctx.beginPath();
-          ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-          
-        	let hue = 129;
-  				let saturation = Math.floor(Math.random() * 50);
-  				let lightness = 48;
-  				ctx.fillStyle = 'hsl(' + hue + ',' + saturation + '%,' + lightness + '%)'
-          
-          // ctx.fillStyle = 'hsl(129, 'Math.random() * 20' %, 48%)';
-          ctx.fill();
-          ctx.stroke();
-          requestAnimationFrame(this.update.bind(this));
-        }
-        else{
-          const flowers = new Flowers(this.x, this.y, this.size);
-          if (flowerBTN === "Flower On"){
-        		flowers.grow();
+      }
+    }
+
+    function draw(){
+      noStroke()
+      fill(255)
+
+      for (let i = 0; i<points.length; i++){
+
+        var r = map(points[i].x, 0, width, 50, 255)
+        var g = map(points[i].y, 0, width, 50, 255)
+        var b = map(points[i].x, 0, width, 255, 50)
+
+        fill(r,g,b)
+
+        var angle = map(noise(points[i].x * mult, points[i].y * mult), 0, 1, 0, 720)
+
+        points[i].add(createVector(cos(angle), sin(angle)))
+
+        ellipse(points[i].x, points[i].y, 1)
+      }
+    }
+
+    window.addEventListener('mousemove', function(e){  
+        if(drawing){
+          for (let i = 0; i < 3; i++){
+            const root = new Stem(e.x, e.y);
+            root.update();
+            colorSelect();
           }
         }
-   		 }
-    }
-  
-  
-  let points = [];
-  let mult = 0.005;
-  
-	function setup() {
-    
-    ctx = createCanvas(windowWidth, windowHeight);
-    background(30);
-    ctx = canvas.getContext('2d');
-    
-    // const canvas = document.getElementById("canva");
-    // ctx.canvas.width = 683;
-    // ctx.canvas.height = 457;
-    //let points = [];
-    
-    const imgLinks = [
-       "url('https://cdn.shopify.com/s/files/1/1394/8105/files/sentinels_detail_600x600.jpg?v=1609965908.jpg?w=1380&t=st=1676307169~exp=1676307769~hmac=ec4286b43bc937d24e5bc8049ec0e6c1bd14edf20dcb3d14a3356bca07a7ece1')",
-       "url('https://www.wallmur.com/media/catalog/pdata/cache/1/crop_image/1100x/040ec0/c/_/black-and-white-forest-wallpaper-mural-wm-21343751oo-41481680.jpg')",
-       "url('https://images.custommade.com/NyCZz9O3clVzLWZGFsD5mbsW8TA=/custommade-photosets/125891/125891.423300.jpg')",
-       "url('https://img.rawpixel.com/s3fs-private/rawpixel_images/website_content/fl22107211073-image-kufaqx2q.jpg?w=800&dpr=1&fit=default&crop=default&q=65&vib=3&con=3&usm=15&bg=F4F4F3&ixlib=js-2.2.1&s=aec133d36ca4f1a93a5668ca8eb6cccb')",
-       "url('https://media.istockphoto.com/id/907831032/photo/sun-bursts-in-the-rain-forest-vancouver-canada-in-black-and-white.jpg?b=1&s=170667a&w=0&k=20&c=TMXTY6Q6uCEMzqPIljwUFkpQrea5J826X7E2evXiG7g=')"
-     ];
-    
-    let drawing = false;
-    
-    let density = 20
-    let space = width / density;
-    
-    for (let x = 0; x < width; x += space){
-      for (let y = 0; y < height; y+= space){
-        var p = createVector(x,y)
-        points.push(p)
-      }
-    }
-  }
-  
-  function draw(){
-    noStroke()
-    fill(255)
-    
-    for (let i = 0; i<points.length; i++){
-      
-      var r = map(points[i].x, 0, width, 50, 255)
-      var g = map(points[i].y, 0, width, 50, 255)
-      var b = map(points[i].x, 0, width, 255, 50)
-      
-      fill(r,g,b)
-      
-      var angle = map(noise(points[i].x * mult, points[i].y * mult), 0, 1, 0, 720)
-      
-      points[i].add(createVector(cos(angle), sin(angle)))
-      
-      ellipse(points[i].x, points[i].y, 1)
-    }
-  }
-  
-  window.addEventListener('mousemove', function(e){  
-      if(drawing){
-        for (let i = 0; i < 3; i++){
+      });
+
+      window.addEventListener('mousedown', function(e){
+        drawing = true;
+        for (let i = 0; i < 30; i++){
           const root = new Stem(e.x, e.y);
           root.update();
         }
-      }
-    });
-    
-    window.addEventListener('mousedown', function(e){
-      drawing = true;
-      for (let i = 0; i < 30; i++){
-        const root = new Stem(e.x, e.y);
-      	root.update();
-      }
-    });
-  
-    window.addEventListener('mouseup', function(){
-      drawing = false;
-    });
-    
-    window.addEventListener('load', setup);
-</script>
+      });
+
+      window.addEventListener('mouseup', function(){
+        drawing = false;
+      });
+
+      window.addEventListener('load', setup);
+  </script>
+</body>
